@@ -1,9 +1,12 @@
+using API.Interfaces;
+using API.Services;
 using Scalar.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
+builder.Services.AddScoped<IAwingService, AwingService>();
 builder.Services.AddControllers();
 
 // Add Swagger/OpenAPI support.
