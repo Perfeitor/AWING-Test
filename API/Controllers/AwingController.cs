@@ -1,3 +1,5 @@
+using API.Interfaces;
+using API.Models;
 using Microsoft.AspNetCore.Mvc;
 
 namespace API.Controllers;
@@ -6,9 +8,16 @@ namespace API.Controllers;
 [Route("[controller]")]
 public class AwingController : ControllerBase
 {
-    [HttpGet("GetTest")]
-    public IActionResult Get()
+    private readonly IAwingService _awingService;
+    public AwingController(IAwingService awingService)
     {
-        return Ok();
+        _awingService = awingService;
+    }
+    
+    [HttpPost("calculate-fuel")]
+    public IActionResult Get([FromBody] TreasureRequest treasureRequest)
+    {
+        var result = _awingService.CalculateFuel(treasureRequest);
+        return Ok(result);
     }
 }
