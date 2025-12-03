@@ -4,5 +4,5 @@ namespace API.Interfaces;
 
 public interface IAwingService
 {
-    public double CalculateFuel(TreasureRequest treasureRequest);
+    public Task<double> CalculateFuel(TreasureRequest treasureRequest);
 }

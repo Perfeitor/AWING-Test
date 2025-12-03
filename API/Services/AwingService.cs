@@ -1,17 +1,21 @@
+using API.Data;
 using API.Interfaces;
 using API.Models;
+using Newtonsoft.Json;
 
 namespace API.Services;
 
 public class AwingService : IAwingService
 {
-    public AwingService()
+    private readonly ApplicationDbContext _dbContext;
+    public AwingService(ApplicationDbContext dbContext)
     {
+        _dbContext = dbContext;
     }
     
     private readonly int _topK = 5;
     
-    public double CalculateFuel(TreasureRequest treasureRequest)
+    public async Task<double> CalculateFuel(TreasureRequest treasureRequest)
     {
         // B1: Gom tọa độ rương theo value
         var layers = BuildLayers(treasureRequest.N, treasureRequest.M, treasureRequest.P, treasureRequest.Matrix);
@@ -24,9 +28,21 @@ public class AwingService : IAwingService
         {
             dpPrev = ComputeNextLayerDp(dpPrev, layers[k]);
         }
-
-        // B4: Kết quả là min dp của tầng cuối
-        return dpPrev.Min(d => d.Cost);
+        
+        // B4: Lưu dữ liệu về input và kết quả vào database
+        treasureRequest.MatrixJson = JsonConvert.SerializeObject(treasureRequest.Matrix);
+        _dbContext.TreasureRequests.Add(treasureRequest);
+        var minFuel= dpPrev.Min(d => d.Cost);
+        var result = new TreasureResult
+        {
+            ResultFuel = minFuel,
+            SessionId = treasureRequest.Id
+        };
+        _dbContext.TreasureResults.Add(result);
+        await _dbContext.SaveChangesAsync();
+        
+        // B5: Trả về kết quả
+        return minFuel;
     }
 
     /// <summary>
