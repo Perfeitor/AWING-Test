@@ -15,9 +15,16 @@ public class AwingController : ControllerBase
     }
     
     [HttpPost("calculate-fuel")]
-    public IActionResult Get([FromBody] TreasureRequest treasureRequest)
+    public async Task<IActionResult> Get([FromBody] TreasureRequest treasureRequest)
     {
-        var result = _awingService.CalculateFuel(treasureRequest);
-        return Ok(result);
+        try
+        {
+            var result = await _awingService.CalculateFuel(treasureRequest);
+            return Ok(result); 
+        }
+        catch(Exception ex)
+        {
+            return BadRequest(new { message = ex.Message });
+        }
     }
 }
