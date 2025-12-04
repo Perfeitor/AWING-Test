@@ -30,8 +30,9 @@ if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
     app.MapScalarApiReference();
-    app.UseCors("AllowAllOrigins");
 }
+
+app.UseCors("AllowAllOrigins");
 
 app.UseHttpsRedirection();
 
